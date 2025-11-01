@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>温馨提示</title>
+<style>
+  html,body{
+    height:100%; margin:0; background:#f7f7f7;
+    font-family:-apple-system,system-ui,Segoe UI,Roboto,Helvetica,Arial,"PingFang SC","Microsoft YaHei";
+    overflow:hidden; /* FS1: fullscreen, no scroll */
+  }
+  .note{
+    position:fixed; padding:10px 16px; border-radius:12px;
+    color:#222; box-shadow:0 8px 24px rgba(0,0,0,.15);
+    animation: float 6s ease-in-out infinite;
+    user-select:none; display:grid; place-items:center;
+    width:280px; height:100px; text-align:center; line-height:1.35;
+    cursor:pointer;
+  }
+  @keyframes float{
+    0%{transform:translateY(0)}
+    50%{transform:translateY(-8px)}
+    100%{transform:translateY(0)}
+  }
+  .goodbye{
+    position:fixed; inset:0; display:flex; justify-content:center; align-items:center;
+    background:white; font-size:20px; z-index:99999; text-align:center;
+    font-family:-apple-system,system-ui,Segoe UI,Roboto,Helvetica,Arial,"PingFang SC","Microsoft YaHei";
+  }
+</style>
+</head>
+<body>
+
+<script>
+let running = true;
+let lastSpace = 0;
+const SPACE_GAP = 700; // 0.7 sec for double-space
+const tips = [
+  "多喝水哦 💧","每天都要开开心心 😊","不要太晚睡 🌙","记得吃水果 🍎","一直微笑呀 😄",
+  "多多爱自己 💖","我想你了 🫶","可以抱抱我吗 🤗","好期待下次见到你 ✨","不要想太多 🌈",
+  "放松一下，慢慢来 🌿","早点休息，睡个好觉 😴","愿你所有烦恼都消失 💫","要照顾好自己 🌷",
+  "你今天过得怎么样 ☀️","下雨了，盖好被子 🌧️🛏️",
+  "你已经做得很好了，这样就够了 💛","今天也请温柔地对待自己 🌼","你的感受很重要，我在这里陪你 🫂",
+  "深呼吸，慢慢来 🌬️","不需要一下子完成所有事情 💭","你值得被爱、被照顾和被温柔对待 💗",
+  "累了就休息一下也没关系 ☕","小小的一步也是进步 👣","你不是一个人，我在乎你 🤍",
+  "谢谢你一直在努力 🌟","你的笑容会照亮这一天 ✨","为你的坚持感到骄傲 💪",
+  "你被爱着，比你想的还要多 💞","今天也请对自己温柔一点 🤍","随时都可以重新开始 🌅",
+  "你的内心坚强又勇敢 🦋","此刻你是安全的，深呼吸 🌈","好事正在路上 🌤️","我真的相信你 💫",
+  "因为有你，世界变得更温柔 🌻"
+];
+const colors = ["#ffd1dc","#b3e5fc","#c8e6c9","#e6e6fa","#fff9c4","#e1bee7",
+                "#ffccbc","#ffe0b2","#e0fff4","#ffe4e1","#f0fff0","#fff0f5","#fdf5e6"];
+
+function createNote(){
+  if(!running) return;
+  const div = document.createElement('div');
+  div.className = 'note';
+  div.textContent = tips[Math.floor(Math.random()*tips.length)];
+  div.style.background = colors[Math.floor(Math.random()*colors.length)];
+
+  const w = 280, h = 100;
+  const x = Math.random() * Math.max(1, window.innerWidth - w);
+  const y = Math.random() * Math.max(1, window.innerHeight - h);
+  div.style.left = x + 'px';
+  div.style.top  = y + 'px';
+
+  // click to close one
+  div.onclick = () => div.remove();
+
+  // double click quits
+  div.ondblclick = quitAll;
+
+  document.body.appendChild(div);
+}
+
+// Auto-start (0.5s)
+const interval = setInterval(createNote, 500);
+createNote(); // first immediately
+
+function clearAll(){
+  document.querySelectorAll('.note').forEach(n => n.remove());
+}
+
+function quitAll(){
+  if(!running) return;
+  running = false;
+  clearInterval(interval);
+  clearAll();
+
+  const bye = document.createElement('div');
+  bye.className = 'goodbye';
+  bye.textContent = "再见啦，照顾好自己哦 👋💗";
+  document.body.appendChild(bye);
+
+  setTimeout(() => { bye.remove(); }, 1000);
+}
+
+// SPACE & Double-SPACE
+document.addEventListener('keydown', e => {
+  if(e.code === 'Space'){
+    const now = Date.now();
+    if(now - lastSpace <= 700){
+      quitAll();
+    } else {
+      clearAll();
+    }
+    lastSpace = now;
+    e.preventDefault();
+  }
+});
+</script>
+</body>
+</html>
